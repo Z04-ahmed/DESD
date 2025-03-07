@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql:latest
+    container_name: Mysql_2
+    restart: always
+    environment:
+      MYSQL_DATABASE: django_db
+      MYSQL_USER: django_user
+      MYSQL_PASSWORD: django_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3308:3306"  # Map port 3308 on the host to port 3306 in the container
+
+  web:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  python:
+    image: python:3.10
+    container_name: python_container
+    working_dir: /app
+    volumes:
+      - ./python_scripts:/app  # Mounts a folder for scripts
+    command: ["tail", "-f", "/dev/null"]  # Keeps container running

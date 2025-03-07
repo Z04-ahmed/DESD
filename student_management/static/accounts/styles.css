@@ -1,0 +1,56 @@
+/* General Styles */
+body {
+    background: #f0f2f5;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Container for the login/signup section */
+.login-container {
+    display: flex;
+    width: 800px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* Left: Login Form */
+.login-form {
+    padding: 40px;
+    width: 50%;
+}
+
+/* Right: Signup Section */
+.signup-section {
+    width: 50%;
+    background: linear-gradient(135deg, #003bff, #002f99);
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #0041ff;
+    border: none;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.btn-outline-light {
+    border: 2px solid white;
+    padding: 10px;
+}
+
+/* Input Fields */
+.input-group-text {
+    background: #f0f2f5;
+    border-right: none;
+}
+
+.form-control {
+    border-left: none;
+}
