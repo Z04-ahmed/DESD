@@ -1,0 +1,97 @@
+/* General Body Styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121417;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+/* Style for the navbar */
+.navbar {
+    background-color: #333;
+    padding: 10px 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Unordered list for the navbar */
+.navbar ul {
+    list-style: none;  /* Remove default bullet points */
+    margin: 0;  /* Remove default margin */
+    padding: 0;  /* Remove default padding */
+    display: flex;  /* Display list items horizontally */
+    justify-content: center;  /* Center the nav items */
+}
+
+/* Style for the navbar items */
+.navbar li {
+    margin-right: 20px;  /* Space out the items horizontally */
+}
+
+/* Style for the navbar links */
+.navbar a {
+    text-decoration: none;  /* Remove underlines from links */
+    color: #fff;  /* White text */
+    font-size: 18px;  /* Set a font size */
+    padding: 8px 16px;  /* Add some padding around the text */
+    border-radius: 4px;  /* Rounded corners for the links */
+    transition: background-color 0.3s ease;  /* Smooth background color transition on hover */
+}
+
+/* Hover effect for navbar links */
+.navbar a:hover {
+    background-color: #555;  /* Change background color on hover */
+}
+
+/* Optional: Remove the margin from the last navbar item */
+.navbar li:last-child {
+    margin-right: 0;
+}
+
+
+/* Welcome Text */
+h2 {
+    text-align: center;
+    margin-top: 100px;  /* Space to avoid nav bar overlap */
+    font-size: 2rem;
+    color: white;
+}
+
+/* Logout Link */
+a {
+    text-decoration: none;
+    color: #4a90e2;
+    font-size: 16px;
+    margin: 10px 0;
+    display: block;
+    text-align: center;
+}
+
+a:hover {
+    color: #357abd; /* Darker blue on hover */
+}
+
+
+/* Responsive Navbar for Small Screens */
+@media (max-width: 768px) {
+    .navbar ul {
+        flex-direction: column;  /* Stack the links vertically */
+        align-items: center;
+    }
+
+    .navbar ul li {
+        margin: 10px 0;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

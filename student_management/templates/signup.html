@@ -8,11 +8,12 @@
     <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
 </head>
 <body>
+<div class="container">
 <h2>Signup</h2>
 {% if error %}
 <p style="color: red;">{{ error }}</p>
 {% endif %}
-<form method="post" action="{% url 'login' %}">
+<form method="post" action="{% url 'signup' %}">
     {% csrf_token %}
     <input type="text" name="username" placeholder="Username" required><br>
     <input type="email" name="email" placeholder="Email" required><br>
@@ -21,5 +22,6 @@
     <button type="submit">Signup</button>
 </form>
 <a href="{% url 'user_login' %}">Already have an account? Login</a>
+</div>
 </body>
 </html>

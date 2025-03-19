@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
+from student_management.models import Profile
+from django import forms
+
 
 def signup(request):
     if request.method == 'POST':
@@ -15,7 +18,7 @@ def signup(request):
             if not User.objects.filter(username=username).exists():
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
-                return redirect('dashboard')
+                return redirect('user_login')
             else:
                 return render(request, 'signup.html', {'error': 'Username already exists'})
         else:
@@ -46,3 +49,13 @@ def dashboard(request):
 def user_logout(request):
     auth_logout(request)
     return redirect('login')  # Redirect back to login page after logout
+
+class UserUpdateForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['name', 'major', 'year', 'bio', 'achievements', 'campus_involvement', 'profile_picture']
