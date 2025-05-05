@@ -1,0 +1,232 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uni Hub - Connect. Explore. Thrive.</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="{% url 'home' %}" class="logo">Uni Hub</a>
+
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="{% url 'home' %}" class="nav-link active">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_login' %}" class="btn btn-outline">Sign In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+            </nav>
+
+            <!-- Mobile Navigation -->
+            <nav class="mobile-nav">
+                <a href="{% url 'home' %}" class="nav-link active">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_login' %}" class="btn btn-outline mobile-btn">Sign In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary mobile-btn">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container hero-container">
+                <h1>Uni Hub – Connect. Explore. Thrive.</h1>
+                <p>Your gateway to campus communities, events, and connections that matter. Join Uni Hub today and make the most of your university experience.</p>
+                <div class="hero-buttons">
+                    <a href="{% url 'signup' %}" class="btn btn-light btn-lg">Join Uni Hub</a>
+                    <a href="{% url 'user_login' %}" class="btn btn-outline-light btn-lg">Sign In</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intro Section -->
+        <section class="intro">
+            <div class="container">
+                <h2 class="section-title">How Uni Hub Helps Students</h2>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i data-lucide="users"></i>
+                        </div>
+                        <h3>Find Communities</h3>
+                        <p>Discover and join groups that match your interests and academic goals.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i data-lucide="calendar"></i>
+                        </div>
+                        <h3>Track Events</h3>
+                        <p>Never miss important campus events, workshops, and social gatherings.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i data-lucide="book-open"></i>
+                        </div>
+                        <h3>Build Your Profile</h3>
+                        <p>Create a personalized profile to showcase your skills and interests.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Sections -->
+        <section class="features">
+            <div class="container">
+                <!-- Feature 1 -->
+                <div class="feature-row">
+                    <div class="feature-content">
+                        <h2>Personalized Profiles</h2>
+                        <p>Build your unique digital identity on campus. Showcase your academic interests, skills, and extracurricular activities to connect with like-minded peers.</p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="arrow-right"></i> Highlight your academic achievements</li>
+                            <li><i data-lucide="arrow-right"></i> Share your interests and skills</li>
+                            <li><i data-lucide="arrow-right"></i> Connect with peers in your field</li>
+                        </ul>
+                    </div>
+                    <div class="feature-image">
+                        <div class="placeholder-image"></div>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-row reverse">
+                    <div class="feature-image">
+                        <div class="placeholder-image"></div>
+                    </div>
+                    <div class="feature-content">
+                        <h2>Discover Communities</h2>
+                        <p>Find and join communities that align with your interests. From academic clubs to hobby groups, there's something for everyone at Uni Hub.</p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="arrow-right"></i> Browse communities by category</li>
+                            <li><i data-lucide="arrow-right"></i> Create your own community</li>
+                            <li><i data-lucide="arrow-right"></i> Engage with community discussions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-row">
+                    <div class="feature-content">
+                        <h2>Campus Events</h2>
+                        <p>Stay updated with all campus events. Filter by your interests, RSVP to events, and never miss an opportunity to engage with your university community.</p>
+                        <ul class="feature-list">
+                            <li><i data-lucide="arrow-right"></i> Find events relevant to your interests</li>
+                            <li><i data-lucide="arrow-right"></i> Get reminders for upcoming events</li>
+                            <li><i data-lucide="arrow-right"></i> Connect with event organizers</li>
+                        </ul>
+                    </div>
+                    <div class="feature-image">
+                        <div class="placeholder-image"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials">
+            <div class="container">
+                <h2 class="section-title">Student Voices</h2>
+                <div class="testimonial-slider">
+                    <div class="testimonial-slide active">
+                        <div class="testimonial-quote">
+                            <i data-lucide="quote"></i>
+                            <blockquote>Uni Hub has completely transformed my university experience. I've found my community and made lifelong friends through the platform.</blockquote>
+                            <div class="testimonial-author">
+                                <p class="author-name">Alex Johnson</p>
+                                <p class="author-role">Computer Science, Junior</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide">
+                        <div class="testimonial-quote">
+                            <i data-lucide="quote"></i>
+                            <blockquote>As a freshman, I was worried about finding my place on campus. Uni Hub made it easy to discover clubs and events that matched my interests.</blockquote>
+                            <div class="testimonial-author">
+                                <p class="author-name">Samantha Lee</p>
+                                <p class="author-role">Biology, Freshman</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-slide">
+                        <div class="testimonial-quote">
+                            <i data-lucide="quote"></i>
+                            <blockquote>The events feature is amazing! I never miss important workshops or social gatherings anymore. It's all organized in one place.</blockquote>
+                            <div class="testimonial-author">
+                                <p class="author-name">Michael Rodriguez</p>
+                                <p class="author-role">Business Administration, Senior</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-controls">
+                        <button class="testimonial-prev" aria-label="Previous testimonial">
+                            <i data-lucide="chevron-left"></i>
+                        </button>
+                        <div class="testimonial-dots">
+                            <button class="testimonial-dot active" data-index="0" aria-label="Go to testimonial 1"></button>
+                            <button class="testimonial-dot" data-index="1" aria-label="Go to testimonial 2"></button>
+                            <button class="testimonial-dot" data-index="2" aria-label="Go to testimonial 3"></button>
+                        </div>
+                        <button class="testimonial-next" aria-label="Next testimonial">
+                            <i data-lucide="chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Uni Hub</h3>
+                    <p>Your gateway to campus communities, events, and connections that matter.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'user_login' %}">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Uni Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'javascripts/main.js' %}"></script>
+</body>
+</html>

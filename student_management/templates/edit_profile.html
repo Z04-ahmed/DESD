@@ -1,28 +1,93 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'accounts/profileedit.css' %}">
-
+    <title>Edit Profile - Uni Hub</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
 </head>
 <body>
-    
-    {% block content %}
-    <div class="form-container">
-        <h2>Edit Profile</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="form-group">
-                {{ user_form.as_p }}
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="{% url 'home' %}" class="logo">Uni Hub</a>
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <nav class="desktop-nav">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_logout' %}" class="btn btn-outline">Log Out</a>
+            </nav>
+            <nav class="mobile-nav">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_logout' %}" class="btn btn-outline mobile-btn">Log Out</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <h2>Edit Profile</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ user_form.as_p }}
+                </div>
+                <div class="form-group">
+                    {{ profile_form.as_p }}
+                </div>
+                <button type="submit" class="submit-btn">Save Changes</button>
+            </form>
+            <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Uni Hub</h3>
+                    <p>Your gateway to campus communities, events, and connections that matter.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'user_login' %}">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="form-group">
-                {{ profile_form.as_p }}
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Uni Hub. All rights reserved.</p>
             </div>
-            <button type="submit" class="submit-btn">Save Changes</button>
-        </form>
-        <a href="{% url 'dashboard' %}" class="back-link">Back to Dashboard</a>
-    </div>
-{% endblock %}
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 </body>
 </html>

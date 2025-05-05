@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.user_login, name='user_login'),  # This will match 'student/'
+    path('', views.index, name='home'),  # This will match 'student/'
     path('signup/', views.signup, name='signup'),  # This will match 'student/signup/'
     path('login/', views.user_login, name='user_login'),  # Changed name here
     path('logout/', views.user_logout, name='user_logout'),  # Renamed logout view

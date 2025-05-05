@@ -89,3 +89,5 @@ def edit_profile(request):
 
     return render(request, 'edit_profile.html', {'user_form': user_form, 'profile_form': profile_form})
 
+def index(request):
+    return render(request, 'index.html')

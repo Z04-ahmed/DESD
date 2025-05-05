@@ -1,22 +1,214 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>UniHub Dashboard</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'accounts/dashboard.css' %}">
-    
+    <title>Dashboard - Uni Hub</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
 </head>
 <body>
-    <nav class="navbar">
-        <ul>
-            <li><a href="{% url 'dashboard' %}">Home</a></li>
-            <li><a href="{% url 'edit_profile' %}">Student Info</a></li>
-            <li><a href="#">Communities</a></li>
-            <li><a href="{% url 'user_logout' %}">Logout</a></li>
-        </ul>
-    </nav>
-<h2>Welcome to UniHub, {{ user.username }}</h2>
+  <!-- Header -->
+  <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">Uni Hub</a>
+            
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <!-- Navbar -->
+            <nav class="desktop-nav">
+                
+                
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'user_logout' %}">Logout</a>
+                
+            </nav>
+            
+        </div>
+    </header>
+    <main>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Welcome, {{ user.username }}</h1>
+                <div class="dashboard-actions">
+                    <button class="btn btn-icon" aria-label="Notifications">
+                        <i data-lucide="bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <a href="{% url 'user_logout' %}" class="btn btn-outline logout-btn">
+                        <i data-lucide="log-out"></i>
+                        <span class="logout-text">Log Out</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div>
+                            <h2>Profile</h2>
+                            <p>Your personal information</p>
+                        </div>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-icon" aria-label="Edit profile">
+                            <i data-lucide="edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-avatar">
+                            <img src="https://fakeimg.pl/600x400" alt="Profile avatar">
+                        </div>
+                        <h3 class="profile-name">{{ user.get_full_name }}</h3>
+                        <p class="profile-role">Computer Science, Junior</p>
+                        <p class="profile-bio">Passionate about coding and technology. Looking to connect with like-minded students and explore new opportunities on campus.</p>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button class="tab-button active" data-tab="communities">Communities</button>
+                            <button class="tab-button" data-tab="events">Events</button>
+                            <button class="tab-button" data-tab="announcements">Announcements</button>
+                        </div>
+
+                        <!-- Communities Tab -->
+                        <div class="tab-content active" id="communities-tab">
+                            <div class="content-card">
+                                <div class="content-header">
+                                    <div>
+                                        <h2>My Communities</h2>
+                                        <p>Communities you're a part of</p>
+                                    </div>
+                                    <button class="btn btn-primary">
+                                        <i data-lucide="users"></i>
+                                        Explore More
+                                    </button>
+                                </div>
+                             <div class="content-body">
+                                    <div class="search-bar">
+                                        <i data-lucide="search"></i>
+                                        <input type="text" placeholder="Search communities...">
+                                    </div>
+                                    <div class="communities-list" id="communities-list">
+                                        <!-- Communities will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Events Tab -->
+                        <div class="tab-content" id="events-tab">
+                            <div class="content-card">
+                                <div class="content-header">
+                                    <div>
+                                        <h2>Upcoming Events</h2>
+                                        <p>Events you might be interested in</p>
+                                    </div>
+                                    <div class="header-actions">
+                                   <select id="event-filter" class="select-filter">
+                                            <option value="all">All Events</option>
+                                            <option value="academic">Academic</option>
+                                            <option value="social">Social</option>
+                                            <option value="service">Service</option>
+                                            <option value="creative">Creative</option>
+                                        </select>
+                                        <button class="btn btn-primary">
+                                            <i data-lucide="calendar"></i>
+                                            Add Event
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="events-list" id="events-list">
+                                        <!-- Events will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Announcements Tab -->
+                        <div class="tab-content" id="announcements-tab">
+                            <div class="content-card">
+                                <div class="content-header">
+                                    <div>
+                                        <h2>Campus Announcements</h2>
+                                        <p>Stay updated with the latest campus news</p>
+                                    </div>
+                                </div>
+                                <div class="content-body">
+                                    <div class="announcements-list" id="announcements-list">
+                                        <!-- Announcements will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Uni Hub</h3>
+                    <p>Your gateway to campus communities, events, and connections that matter.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'user_login' %}">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Uni Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'javascripts/main.js' %}"></script>
+    <script src="{% static 'javascripts/dashboard.js' %}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.dataset.tab + '-tab';
+                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    button.classList.add('active');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        });
+        
+    </script>
 </body>
 </html>

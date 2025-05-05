@@ -1,27 +1,125 @@
-{% load static %} 
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Signup</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
+    <title>Sign Up - Uni Hub</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
 </head>
 <body>
-<div class="container">
-<h2>Signup</h2>
-{% if error %}
-<p style="color: red;">{{ error }}</p>
-{% endif %}
-<form method="post" action="{% url 'signup' %}">
-    {% csrf_token %}
-    <input type="text" name="username" placeholder="Username" required><br>
-    <input type="email" name="email" placeholder="Email" required><br>
-    <input type="password" name="password" placeholder="Password" required><br>
-    <input type="password" name="confirm_password" placeholder="Confirm Password" required><br>
-    <button type="submit">Signup</button>
-</form>
-<a href="{% url 'user_login' %}">Already have an account? Login</a>
-</div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="{% url 'dashboard' %}" class="logo">Uni Hub</a>
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <nav class="desktop-nav">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_login' %}" class="btn btn-outline">Sign In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary active">Sign Up</a>
+            </nav>
+            <nav class="mobile-nav">
+                <a href="{% url 'home' %}" class="nav-link">Home</a>
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_login' %}" class="btn btn-outline mobile-btn">Sign In</a>
+                <a href="{% url 'signup' %}" class="btn btn-primary mobile-btn active">Sign Up</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <h1>Create an account</h1>
+                    <p>Join Uni Hub to connect with your campus community</p>
+                </div>
+
+                <div class="auth-content">
+                    {% if error %}
+                        <p style="color: red;">{{ error }}</p>
+                    {% endif %}
+                    <form method="post" action="{% url 'signup' %}" id="signup-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" placeholder="JohnDoe" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">University Email</label>
+                            <input type="email" id="email" name="email" placeholder="you@university.edu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block" id="submit-button">Create Account</button>
+                    </form>
+                </div>
+
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="{% url 'user_login' %}">Sign in</a></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Uni Hub</h3>
+                    <p>Your gateway to campus communities, events, and connections that matter.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'user_login' %}">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Uni Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'javascripts/main.js' %}"></script>
+    <script src="{% static 'javascripts/auth.js' %}"></script>
+    <script src="{% static 'javascripts/dashboard.js' %}"></script>
 </body>
 </html>
