@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from student_management.models import Profile
 from django import forms
+from .models import Community
 
 
 def signup(request):
@@ -59,3 +60,9 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['name', 'major', 'year', 'bio', 'achievements', 'campus_involvement', 'profile_picture']
+
+
+class CommunityForm(forms.ModelForm):
+    class Meta:
+        model = Community
+        fields = ['name', 'description', 'leader',]

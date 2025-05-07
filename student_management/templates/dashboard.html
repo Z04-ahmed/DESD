@@ -23,7 +23,7 @@
                 
                 
                 <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'user_logout' %}">Logout</a>
+                <a href="{% url 'home' %}">Logout</a>
                 
             </nav>
             
@@ -34,11 +34,16 @@
             <div class="dashboard-header">
                 <h1>Welcome, {{ user.username }}</h1>
                 <div class="dashboard-actions">
+                    <!-- Notification bell -->
                     <button class="btn btn-icon" aria-label="Notifications">
                         <i data-lucide="bell"></i>
-                        <span class="notification-badge">3</span>
+                        <span class="notification-badge">0</span>
                     </button>
-                    <a href="{% url 'user_logout' %}" class="btn btn-outline logout-btn">
+
+                    <!-- Toast popup -->
+                    <div id="toast" class="toast" style="display: none;"></div>
+
+                    <a href="{% url 'home' %}" class="btn btn-outline logout-btn">
                         <i data-lucide="log-out"></i>
                         <span class="logout-text">Log Out</span>
                     </a>
@@ -59,11 +64,15 @@
                     </div>
                     <div class="profile-content">
                         <div class="profile-avatar">
-                            <img src="https://fakeimg.pl/600x400" alt="Profile avatar">
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile avatar" style="width:150px; height:150px; border-radius:50%;">
                         </div>
-                        <h3 class="profile-name">{{ user.get_full_name }}</h3>
-                        <p class="profile-role">Computer Science, Junior</p>
-                        <p class="profile-bio">Passionate about coding and technology. Looking to connect with like-minded students and explore new opportunities on campus.</p>
+                        <h3 class="profile-name">{{ profile.name }}</h3>
+                        <p class="profile-major">Major: {{ profile.major }}</p>
+                        <p class="profile-year">Year: {{ profile.year }}</p>
+                        <p class="profile-bio">{{ profile.bio }}</p>
+                        <p class="profile-achievements"><strong>Achievements:</strong> {{ profile.achievements }}</p>
+                        <p class="profile-involvement"><strong>Campus Involvement:</strong> {{ profile.campus_involvement }}</p>
+                        <p class="profile-email"><strong>Email:</strong> {{ user.email }}</p>
                     </div>
                 </div>
 
@@ -89,15 +98,33 @@
                                         Explore More
                                     </button>
                                 </div>
-                             <div class="content-body">
+                                <div class="content-body">
                                     <div class="search-bar">
                                         <i data-lucide="search"></i>
-                                        <input type="text" placeholder="Search communities...">
+                                        <input type="text" id="community-search-input" placeholder="Search communities...">
                                     </div>
+                                
                                     <div class="communities-list" id="communities-list">
-                                        <!-- Communities will be populated by JavaScript -->
+                                        {% for community in communities %}
+                                        <div class="community-item" data-id="{{ community.id }}" data-name="{{ community.name }}" data-description="{{ community.description }}">
+                                            <div class="item-info">
+                                                <div class="item-icon">
+                                                    <i data-lucide="users"></i>
+                                                </div>
+                                                <div class="item-details">
+                                                    <h4>{{ community.name }}</h4>
+                                                    <p>{{ community.description }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="item-actions">
+                                                <span class="badge badge-primary">Leader: {{ community.leader.username }}</span>
+                                                <button class="btn btn-outline view-btn">View</button>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -112,14 +139,11 @@
                                     <div class="header-actions">
                                    <select id="event-filter" class="select-filter">
                                             <option value="all">All Events</option>
-                                            <option value="academic">Academic</option>
-                                            <option value="social">Social</option>
-                                            <option value="service">Service</option>
-                                            <option value="creative">Creative</option>
+                                            
                                         </select>
                                         <button class="btn btn-primary">
                                             <i data-lucide="calendar"></i>
-                                            Add Event
+                                            Create Event
                                         </button>
                                     </div>
                                 </div>
@@ -152,7 +176,16 @@
             </div>
         </div>
     </main>
+    <div id="community-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" id="close-community-modal">&times;</span>
+            <h2 id="modal-community-name">Community Name</h2>
+            <p id="modal-community-description">Community Description</p>
+            <p id="modal-community-leader">Leader: </p>
 
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -197,18 +230,55 @@
     <script src="{% static 'javascripts/main.js' %}"></script>
     <script src="{% static 'javascripts/dashboard.js' %}"></script>
     <script>
+        const createCommunityApiUrl = "{% url 'create_community_api' %}";
+    </script>
+    <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const target = button.dataset.tab + '-tab';
-                    document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    button.classList.add('active');
-                    document.getElementById(target).classList.add('active');
+            const viewModal = document.getElementById('community-modal');
+            const closeViewBtn = document.getElementById('close-community-modal');
+            const modalName = document.getElementById('modal-community-name');
+            const modalDescription = document.getElementById('modal-community-description');
+            const modalLeader = document.getElementById('modal-community-leader');
+            
+        
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const communityItem = button.closest('.community-item');
+                    const id = communityItem.dataset.id;
+        
+                    try {
+                        const response = await fetch(`/student/communities/${id}/details/`);
+                        if (response.ok) {
+                            const data = await response.json();
+        
+                            modalName.textContent = data.name;
+                            modalDescription.textContent = data.description;
+                            modalLeader.textContent = `Leader: ${data.leader_username}`;
+                            
+        
+                            viewModal.style.display = 'flex';
+                        } else {
+                            alert('Failed to load community details.');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching details:', error);
+                        alert('An error occurred.');
+                    }
                 });
+            });
+        
+            closeViewBtn.addEventListener('click', () => {
+                viewModal.style.display = 'none';
+            });
+        
+            window.addEventListener('click', (event) => {
+                if (event.target === viewModal) {
+                    viewModal.style.display = 'none';
+                }
             });
         });
         
     </script>
+
 </body>
 </html>

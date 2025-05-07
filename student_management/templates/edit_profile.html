@@ -32,19 +32,89 @@
     </header>
 
     <main>
-        <div class="form-container">
-            <h2>Edit Profile</h2>
-            <form method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ user_form.as_p }}
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Welcome, {{ user.username }}</h1>
+                <div class="dashboard-actions">
+                    <!-- Notification bell -->
+                    <button class="btn btn-icon" aria-label="Notifications">
+                        <i data-lucide="bell"></i>
+                        <span class="notification-badge">0</span>
+                    </button>
+
+                    <!-- Toast popup -->
+                    <div id="toast" class="toast" style="display: none;"></div>
+
+                    <a href="{% url 'home' %}" class="btn btn-outline logout-btn">
+                        <i data-lucide="log-out"></i>
+                        <span class="logout-text">Log Out</span>
+                    </a>
                 </div>
-                <div class="form-group">
-                    {{ profile_form.as_p }}
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div>
+                            <h2>Profile</h2>
+                            <p>Your personal information</p>
+                        </div>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-icon" aria-label="Edit profile">
+                            <i data-lucide="edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-avatar">
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile avatar" style="width:150px; height:150px; border-radius:50%;">
+                        </div>
+                        <h3 class="profile-name">{{ profile.name }}</h3>
+                        <p class="profile-major">Major: {{ profile.major }}</p>
+                        <p class="profile-year">Year: {{ profile.year }}</p>
+                        <p class="profile-bio">{{ profile.bio }}</p>
+                        <p class="profile-achievements"><strong>Achievements:</strong> {{ profile.achievements }}</p>
+                        <p class="profile-involvement"><strong>Campus Involvement:</strong> {{ profile.campus_involvement }}</p>
+                        <p class="profile-email"><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
                 </div>
-                <button type="submit" class="submit-btn">Save Changes</button>
-            </form>
-            <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <div class="tabs">
+                        
+
+                        <!-- Communities Tab -->
+                        <div class="tab-content active" id="communities-tab">
+                            <div class="content-card">
+                                <div class="content-header">
+                                    <main>
+                                        <div class="form-container">
+                                            <h2>Edit Profile</h2>
+                                            <form method="POST" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <div class="form-group">
+                                                    {{ user_form.as_p }}
+                                                </div>
+                                                <div class="form-group">
+                                                    {{ profile_form.as_p }}
+                                                </div>
+                                                <button type="submit" class="submit-btn">Save Changes</button>
+                                            </form>
+                                            <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
+                                        </div>
+                                    </main>
+                                </div>
+                                
+                                
+                            </div>
+                        </div>
+
+                        
+
+                        
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 

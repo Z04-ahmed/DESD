@@ -19,13 +19,13 @@
             </button>
             <nav class="desktop-nav">
                 <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                >
                 <a href="{% url 'user_login' %}" class="btn btn-outline">Sign In</a>
                 <a href="{% url 'signup' %}" class="btn btn-primary active">Sign Up</a>
             </nav>
             <nav class="mobile-nav">
                 <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                
                 <a href="{% url 'user_login' %}" class="btn btn-outline mobile-btn">Sign In</a>
                 <a href="{% url 'signup' %}" class="btn btn-primary mobile-btn active">Sign Up</a>
             </nav>
@@ -54,6 +54,12 @@
                         <div class="form-group">
                             <label for="email">University Email</label>
                             <input type="email" id="email" name="email" placeholder="you@university.edu" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date_of_birth">Date of birth</label>
+                            <input type="date" name="date_of_birth" placeholder="Date of Birth" required><br>
+>
                         </div>
 
                         <div class="form-group">
@@ -119,7 +125,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
     <script src="{% static 'javascripts/main.js' %}"></script>
-    <script src="{% static 'javascripts/auth.js' %}"></script>
     <script src="{% static 'javascripts/dashboard.js' %}"></script>
 </body>
 </html>

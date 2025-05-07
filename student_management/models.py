@@ -26,6 +26,19 @@ class Profile(models.Model):
     achievements = models.TextField(blank=True, null=True)
     campus_involvement = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
-
+    date_of_birth = models.DateField(null=True, blank=True)
+    
     def __str__(self):
         return self.user.username
+    
+    
+class Community(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    created_by = models.ForeignKey(User, related_name='created_communities', on_delete=models.CASCADE)
+    leader = models.ForeignKey(User, related_name='leading_communities', on_delete=models.SET_NULL, null=True, blank=True)
+    members = models.ManyToManyField(User, related_name='joined_communities')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name

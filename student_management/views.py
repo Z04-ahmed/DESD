@@ -4,7 +4,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.contrib import messages
+from datetime import datetime
+from .forms import CommunityForm
+from .models import Community
+from django.http import HttpResponseForbidden, HttpResponseNotAllowed, JsonResponse, HttpResponseBadRequest
+import json
+from .models import Community
+from django.views.decorators.csrf import csrf_exempt
 
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import ProfileUpdateForm, UserUpdateForm
 from .models import Profile  # Import Profile model
 
@@ -14,12 +22,15 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
         confirm_password = request.POST['confirm_password']
+        date_of_birth = request.POST['date_of_birth']
 
         if password == confirm_password:
             if not User.objects.filter(username=username).exists():
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
-                Profile.objects.create(user=user)  # Create an empty profile for the user
+                # Convert date_of_birth string to a Python date object
+                dob = datetime.strptime(date_of_birth, '%Y-%m-%d').date()
+                Profile.objects.create(user=user, date_of_birth=dob)
                 messages.success(request, "Account successfully created. You can now log in.")
                 return redirect('user_login')
             else:
@@ -59,13 +70,25 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html', {'user': request.user})
+    communities = Community.objects.all()
+    try:
+        profile = Profile.objects.get(user=request.user)
+    except Profile.DoesNotExist:
+        profile = None  # or handle this however you want (e.g., redirect to setup)
+
+    return render(request, 'dashboard.html', {
+        'communities': communities,
+        'profile': profile,
+        'user': request.user,
+    })
 
 def staff_dashboard(request):
-    if not request.user.is_staff:
-        return redirect('dashboard')  # If not staff, redirect to student dashboard
-    
-    return render(request, 'staff_dashboard.html', {'user': request.user})
+    students = User.objects.filter(is_staff=False, is_superuser=False)
+    communities = Community.objects.all()  # get all communities
+    return render(request, 'staff_dashboard.html', {
+        'students': students,
+        'communities': communities,
+     })
 
 def user_logout(request):
     auth_logout(request)
@@ -91,3 +114,118 @@ def edit_profile(request):
 
 def index(request):
     return render(request, 'index.html')
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)  # Only staff can create
+def create_community_api(request):
+    if request.method == 'POST':
+        try:
+            raw_body = request.body.decode('utf-8')
+            print("📦 Raw body:", raw_body)
+
+            data = json.loads(raw_body)
+            print("📋 Parsed data:", data)
+
+            name = data.get('name')
+            description = data.get('description')
+            leader_id = data.get('leader_id')
+            
+
+            # Log to verify all fields
+            print(f"Parsed fields: name={name}, desc={description}, leader_id={leader_id}, ")
+
+            if not all([name, description, leader_id]):
+                return HttpResponseBadRequest("Missing required fields")
+
+            leader = User.objects.get(id=leader_id)
+
+            community = Community.objects.create(
+                name=name,
+                description=description,
+                leader=leader,
+                created_by=request.user,
+                
+            )
+
+            community.members.add(leader)
+            community.member_count = 1
+            community.save()
+
+            return JsonResponse({
+                'id': community.id,
+                'name': community.name,
+                'description': community.description,
+                'leader_username': leader.username,
+                
+            })
+
+        except Exception as e:
+            print("❌ Error:", e)
+            return HttpResponseBadRequest(str(e))
+
+    return HttpResponseBadRequest("Invalid method")
+@login_required
+def edit_community(request, community_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You do not have permission to edit communities.")
+
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            community = Community.objects.get(id=community_id)
+
+            community.name = data.get('name', community.name)
+            community.description = data.get('description', community.description)
+
+            leader_id = data.get('leader_id')
+            if leader_id:
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                try:
+                    new_leader = User.objects.get(id=leader_id)
+                    community.leader = new_leader
+                except User.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'Leader not found.'}, status=404)
+
+            community.save()
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Community updated.',
+                'new_leader_username': community.leader.username
+            })
+        except Community.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Community not found.'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON.'}, status=400)
+    else:
+        return HttpResponseNotAllowed(['POST'])
+    
+@login_required
+def delete_community(request, community_id):
+    if not request.user.is_staff:
+        return HttpResponseForbidden("You do not have permission to delete communities.")
+
+    if request.method == 'DELETE':
+        try:
+            community = Community.objects.get(id=community_id)
+            community.delete()
+            return JsonResponse({'status': 'success', 'message': 'Community deleted.'})
+        except Community.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Community not found.'}, status=404)
+    else:
+        return HttpResponseNotAllowed(['DELETE'])
+    
+@login_required
+def community_details(request, community_id):
+    try:
+        community = Community.objects.get(id=community_id)
+        data = {
+            'id': community.id,
+            'name': community.name,
+            'description': community.description,
+            'leader_username': community.leader.username,
+        }
+        return JsonResponse(data)
+    except Community.DoesNotExist:
+        return JsonResponse({'error': 'Community not found'}, status=404)
