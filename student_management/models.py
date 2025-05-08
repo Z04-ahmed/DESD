@@ -39,6 +39,38 @@ class Community(models.Model):
     leader = models.ForeignKey(User, related_name='leading_communities', on_delete=models.SET_NULL, null=True, blank=True)
     members = models.ManyToManyField(User, related_name='joined_communities')
     created_at = models.DateTimeField(auto_now_add=True)
+    
 
     def __str__(self):
         return self.name
+    
+class Announcement(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    published_at = models.DateTimeField(auto_now_add=True)
+    # other fields...
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Notification for {self.user.username}'
+    
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    date = models.DateTimeField()
+    location = models.CharField(max_length=200)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    participants = models.ManyToManyField(User, related_name='joined_events', blank=True)
+    community = models.ForeignKey('Community', on_delete=models.CASCADE)  # ✅ add this
+
+    def __str__(self):
+        return self.title
+
+    def list_students(self):
+        return self.participants.all()  # <-- list all students who joined this event

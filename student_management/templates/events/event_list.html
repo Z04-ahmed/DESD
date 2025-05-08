@@ -1,0 +1,397 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Uni Hub</title>
+    <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">Uni Hub</a>
+            
+            <button class="mobile-menu-button" aria-label="Toggle menu">
+                <i data-lucide="menu"></i>
+            </button>
+            <!-- Navbar -->
+            <nav class="desktop-nav">
+              <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+              <a href="{% url 'user_logout' %}" class="btn btn-outline">Log Out</a>
+            </nav>
+            
+        </div>
+    </header>
+    <main>
+        <div class="dashboard-container">
+            <div class="dashboard-header">
+                <h1>Welcome, {{ user.username }}</h1>
+                <div class="dashboard-actions">
+                    <!-- Notification bell -->
+                    <a href="{% url 'notifications' %}" class="btn btn-icon" aria-label="Notifications">
+                        <button class="btn btn-icon">
+                            <i data-lucide="bell"></i>
+                            <span class="notification-badge">{{ unread_notifications_count }}</span>
+                        </button>
+                    </a>
+
+                    <!-- Toast popup -->
+                    <div id="toast" class="toast" style="display: none;"></div>
+
+                    <a href="{% url 'home' %}" class="btn btn-outline logout-btn">
+                        <i data-lucide="log-out"></i>
+                        <span class="logout-text">Log Out</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div>
+                            <h2>Profile</h2>
+                            <p>Your personal information</p>
+                        </div>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-icon" aria-label="Edit profile">
+                            <i data-lucide="edit"></i>
+                        </a>
+                    </div>
+                    <div class="profile-content">
+                        <div class="profile-avatar">
+                            <img src="{{ profile.profile_picture.url }}" alt="Profile avatar" style="width:150px; height:150px; border-radius:50%;">
+                        </div>
+                        <h3 class="profile-name">{{ profile.name }}</h3>
+                        <p class="profile-major">Major: {{ profile.major }}</p>
+                        <p class="profile-year">Year: {{ profile.year }}</p>
+                        <p class="profile-bio">{{ profile.bio }}</p>
+                        <p class="profile-achievements"><strong>Achievements:</strong> {{ profile.achievements }}</p>
+                        <p class="profile-involvement"><strong>Campus Involvement:</strong> {{ profile.campus_involvement }}</p>
+                        <p class="profile-email"><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="dashboard-content">
+                    <div class="tabs">
+                        <div class="tab-list">
+                            
+                            <button class="tab-button" data-tab="events">Event List</button>
+                            
+                        </div>
+
+                        
+                        <div class="events-page-container">
+                          <!-- Main content area -->
+                          <div class="events-main-content">
+                            <!-- Create new event button -->
+                            {% if request.user.is_staff %}
+                            <div class="create-event-container">
+                              <a href="{% url 'create_event' %}" class="btn btn-primary create-event-btn">
+                                create new event
+                              </a>
+                            </div>
+                            {% endif %}
+                        
+                            <!-- Search form -->
+                            <div class="search-container">
+                              <form method="GET" action="{% url 'event_list' %}">
+                                <input type="text" name="q" class="search-bar" placeholder="Search" value="{{ query }}">
+                                <button type="submit" class="btn btn-success">Search</button>
+                              </form>
+                            </div>
+                        ``
+                            <!-- Event cards container -->
+                            <div class="events-grid">
+                              {% for event in events %}
+                              <div class="event-card">
+                                <div class="event-header">
+                                  <h3 class="event-title">{{ event.title }}</h3>
+                                <div class="event-actions">
+                          {% if event.organizer == request.user %}
+                            <!-- edit/delete buttons as before -->
+                          {% else %}
+                            <form method="post" style="display:inline;">
+                              {% csrf_token %}
+                              {% if event.id in joined_event_ids %}
+                                <button formaction="{% url 'leave_event' event.id %}"
+                                        class="btn btn-warning leave-event-btn">
+                                  Leave Event
+                                </button>
+                              {% else %}
+                                <button formaction="{% url 'join_event' event.id %}"
+                                        class="btn btn-success join-event-btn">
+                                  Join Event
+                                </button>
+                              {% endif %}
+                            </form>
+                          {% endif %}
+                        </div>
+                        
+                        
+                        
+                                </div>
+                                <div class="event-details">
+                                  <p class="event-description">{{ event.description|truncatechars:150 }}</p>
+                                  <div class="event-location">
+                                    <span class="event-location-icon">📍</span>
+                                    <span>{{ event.location }}</span>
+                                  </div>
+                                  <div class="event-date">{{ event.date }}</div>
+                                  <div class="event-organizer">Organized by: {{ event.organizer.username }}</div>
+                                </div>
+                              </div>
+                              {% empty %}
+                              <div class="no-events-message">
+                                {% if query %}
+                                <p>No events found matching "{{ query }}".</p>
+                                {% else %}
+                                <p>No events available. Be the first to create one!</p>
+                                {% endif %}
+                              </div>
+                              {% endfor %}
+                            </div>
+                          </div>
+                        
+                          <!-- Sidebar with filters -->
+                          <div class="events-sidebar">
+                            <h3 class="filters-heading">Filters</h3>
+                        
+                            <div class="filter-option">
+                              <button class="btn btn-success">
+                              <a href="{% url 'event_list' %}?filter=upcoming" class="filter-link {% if filter == 'upcoming' %}active{% endif %}">
+                                Upcoming events
+                              </a>
+                            </button>
+                            </div>
+                        
+                            <div class="filter-option">
+                              <button class="btn btn-success">
+                              <a href="{% url 'event_list' %}?filter=past" class="filter-link {% if filter == 'past' %}active{% endif %}">
+                                Past events
+                              </a>
+                            </button>
+                            </div>
+                        
+                            <div class="filter-dropdown">
+                              <details>
+                                <summary class="dropdown-header">
+                                  date added
+                                  <span class="dropdown-icon">▼</span>
+                                </summary>
+                                <div class="dropdown-content">
+                                  <form method="GET" action="{% url 'event_list' %}" class="date-filter-form">
+                                    {% if query %}<input type="hidden" name="q" value="{{ query }}">{% endif %}
+                                    {% if filter %}<input type="hidden" name="filter" value="{{ filter }}">{% endif %}
+                                    <div class="date-inputs">
+                                      <div class="form-group">
+                                        <label for="start_date">From:</label>
+                                        <input type="date" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" class="form-control">
+                                      </div>
+                                      <div class="form-group">
+                                        <label for="end_date">To:</label>
+                                        <input type="date" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" class="form-control">
+                                      </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary">Apply</button>
+                                  </form>
+                                </div>
+                              </details>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {% if query or filter or start_date or end_date %}
+                        <div class="clear-filters">
+                          <a href="{% url 'event_list' %}" class="btn btn-outline-secondary btn-sm">Clear Filters</a>
+                        </div>
+                        {% endif %}
+                        
+                        
+                        <!-- Edit Event Modal -->
+                        <div class="modal" id="editEventModal" tabindex="-1" role="dialog">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                              </div>
+                              <div class="modal-body">
+                                <form id="editEventForm" method="POST">
+                                  {% csrf_token %}
+                                  <div class="form-group">
+                                    <label for="editEventTitle">Title</label>
+                                    <input type="text" class="form-control" id="editEventTitle" name="title">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editEventDescription">Description</label>
+                                    <textarea class="form-control" id="editEventDescription" name="description" rows="3"></textarea>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editEventLocation">Location</label>
+                                    <input type="text" class="form-control" id="editEventLocation" name="location">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="editEventDate">Date</label>
+                                    <input type="datetime-local" class="form-control" id="editEventDate" name="date">
+                                  </div>
+                                </form>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- Unsaved Changes Modal -->
+                        <div class="modal" id="unsavedChangesModal" tabindex="-1" role="dialog">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-body">
+                                <p>You have unsaved changes. Do you want to save them?</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" id="discardChangesBtn">Discard</button>
+                                <button type="button" class="btn btn-primary" id="confirmSaveChangesBtn">Save Changes</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <!-- delete Confirmation Modal -->
+                        <div class="modal" id="deleteConfirmModal" tabindex="-1" role="dialog">
+                          <div class="modal-dialog" role="document">
+                              <div class="modal-content">
+                                  <div class="modal-body">
+                                      <p>Are you sure you want to delete this event?</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                      <form id="deleteEventForm" method="POST" style="display: inline;">
+                                          {% csrf_token %}
+                                          <button type="submit" class="btn btn-danger">Delete Event</button>
+                                      </form>
+                                  </div>
+                              </div>
+                          </div>
+                        </div>
+                        
+
+                        
+    </main>
+    <div id="community-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" id="close-community-modal">&times;</span>
+            <h2 id="modal-community-name">Community Name</h2>
+            <p id="modal-community-description">Community Description</p>
+            <p id="modal-community-leader">Leader: </p>
+            {% if is_leader or user.is_staff %}
+            <a href="{% url 'create_event' %}" class="btn btn-primary">
+                <i data-lucide="calendar"></i>
+                Add Event
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-column">
+                    <h3>Uni Hub</h3>
+                    <p>Your gateway to campus communities, events, and connections that matter.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'user_login' %}">Sign In</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Community Guidelines</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <span id="current-year"></span> Uni Hub. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'javascripts/main.js' %}"></script>
+    <script src="{% static 'javascripts/dashboard.js' %}"></script>
+    <script>
+        const createCommunityApiUrl = "{% url 'create_community_api' %}";
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewModal = document.getElementById('community-modal');
+            const closeViewBtn = document.getElementById('close-community-modal');
+            const modalName = document.getElementById('modal-community-name');
+            const modalDescription = document.getElementById('modal-community-description');
+            const modalLeader = document.getElementById('modal-community-leader');
+            
+        
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const communityItem = button.closest('.community-item');
+                    const id = communityItem.dataset.id;
+        
+                    try {
+                        const response = await fetch(`/student/communities/${id}/details/`);
+                        if (response.ok) {
+                            const data = await response.json();
+        
+                            modalName.textContent = data.name;
+                            modalDescription.textContent = data.description;
+                            modalLeader.textContent = `Leader: ${data.leader_username}`;
+                            
+        
+                            viewModal.style.display = 'flex';
+                        } else {
+                            alert('Failed to load community details.');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching details:', error);
+                        alert('An error occurred.');
+                    }
+                });
+            });
+        
+            closeViewBtn.addEventListener('click', () => {
+                viewModal.style.display = 'none';
+            });
+        
+            window.addEventListener('click', (event) => {
+                if (event.target === viewModal) {
+                    viewModal.style.display = 'none';
+                }
+            });
+        });
+        
+    </script>
+
+</body>
+</html>
+

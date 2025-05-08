@@ -71,7 +71,11 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD':'Nigeria559',
         'HOST': 'localhost',
-        'PORT':'3308'
+        'PORT':'3308',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+            
+        },
     }
 }
 

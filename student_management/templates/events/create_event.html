@@ -4,33 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - Uni Hub</title>
+    <title>Dashboard - Uni Hub</title>
     <link rel="stylesheet" href="{% static 'accounts/style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.min.css">
 </head>
 <body>
-
-    <!-- Header -->
-    <header class="header">
+  <!-- Header -->
+  <header class="header">
         <div class="container header-container">
-            <a href="{% url 'home' %}" class="logo">Uni Hub</a>
+            <a href="index.html" class="logo">Uni Hub</a>
+            
             <button class="mobile-menu-button" aria-label="Toggle menu">
                 <i data-lucide="menu"></i>
             </button>
+            <!-- Navbar -->
             <nav class="desktop-nav">
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_logout' %}" class="btn btn-outline">Log Out</a> 
                 
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                <a href="{% url 'user_logout' %}" class="btn btn-outline">Log Out</a>
             </nav>
-            <nav class="mobile-nav">
-                <a href="{% url 'home' %}" class="nav-link">Home</a>
-                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
-                <a href="{% url 'user_logout' %}" class="btn btn-outline mobile-btn">Log Out</a>
-            </nav>
+            
         </div>
     </header>
-
     <main>
         <div class="dashboard-container">
             <div class="dashboard-header">
@@ -83,43 +79,56 @@
                 <!-- Main Content -->
                 <div class="dashboard-content">
                     <div class="tabs">
-                        
-
-                        <!-- Communities Tab -->
-                        <div class="tab-content active" id="communities-tab">
-                            <div class="content-card">
-                                <div class="content-header">
-                                    <main>
-                                        <div class="form-container">
-                                            <h2>Edit Profile</h2>
-                                            <form method="POST" enctype="multipart/form-data">
-                                                {% csrf_token %}
-                                                <div class="form-group">
-                                                    {{ user_form.as_p }}
-                                                </div>
-                                                <div class="form-group">
-                                                    {{ profile_form.as_p }}
-                                                </div>
-                                                <button type="submit" class="submit-btn">Save Changes</button>
-                                            </form>
-                                            <a href="{% url 'dashboard' %}" class="back-link">← Back to Dashboard</a>
-                                        </div>
-                                    </main>
-                                </div>
-                                
-                                
-                            </div>
+                        <div class="tab-list">
+                            
+                            <button class="tab-button" data-tab="events">Events</button>
+                            
                         </div>
 
                         
+                        <div class="container mt-4">
+                            <h1>Create New Event</h1>
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    {% for field in form %}
+                                        <div class="form-group">
+                                            {{ field.label_tag }}
+                                            {{ field }}
+                                            {% if field.errors %}
+                                                <div class="text-danger">
+                                                    {% for error in field.errors %}
+                                                        {{ error }}
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <button type="submit" class="btn btn-success">Create Event</button>
+                                <a href="{% url 'event_list' %}" class="btn btn-secondary">Cancel</a>
+                            </form>
+                        </div>
+                        
+
 
                         
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
-
+    <div id="community-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-btn" id="close-community-modal">&times;</span>
+            <h2 id="modal-community-name">Community Name</h2>
+            <p id="modal-community-description">Community Description</p>
+            <p id="modal-community-leader">Leader: </p>
+            {% if is_leader or user.is_staff %}
+            <a href="{% url 'create_event' %}" class="btn btn-primary">
+                <i data-lucide="calendar"></i>
+                Add Event
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -161,5 +170,59 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script src="{% static 'javascripts/main.js' %}"></script>
+    <script src="{% static 'javascripts/dashboard.js' %}"></script>
+    <script>
+        const createCommunityApiUrl = "{% url 'create_community_api' %}";
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const viewModal = document.getElementById('community-modal');
+            const closeViewBtn = document.getElementById('close-community-modal');
+            const modalName = document.getElementById('modal-community-name');
+            const modalDescription = document.getElementById('modal-community-description');
+            const modalLeader = document.getElementById('modal-community-leader');
+            
+        
+            document.querySelectorAll('.view-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const communityItem = button.closest('.community-item');
+                    const id = communityItem.dataset.id;
+        
+                    try {
+                        const response = await fetch(`/student/communities/${id}/details/`);
+                        if (response.ok) {
+                            const data = await response.json();
+        
+                            modalName.textContent = data.name;
+                            modalDescription.textContent = data.description;
+                            modalLeader.textContent = `Leader: ${data.leader_username}`;
+                            
+        
+                            viewModal.style.display = 'flex';
+                        } else {
+                            alert('Failed to load community details.');
+                        }
+                    } catch (error) {
+                        console.error('Error fetching details:', error);
+                        alert('An error occurred.');
+                    }
+                });
+            });
+        
+            closeViewBtn.addEventListener('click', () => {
+                viewModal.style.display = 'none';
+            });
+        
+            window.addEventListener('click', (event) => {
+                if (event.target === viewModal) {
+                    viewModal.style.display = 'none';
+                }
+            });
+        });
+        
+    </script>
+
 </body>
 </html>
+

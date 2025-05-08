@@ -19,12 +19,9 @@
                 <i data-lucide="menu"></i>
             </button>
             <!-- Navbar -->
-            <nav class="desktop-nav">
-                
-                
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'home' %}">Logout</a>
-                
+            <nav class="desktop-nav">  
+                <a href="{% url 'dashboard' %}" class="nav-link">Dashboard</a>
+                <a href="{% url 'user_logout' %}" class="btn btn-outline">Log Out</a>     
             </nav>
             
         </div>
@@ -35,10 +32,12 @@
                 <h1>Welcome, {{ user.username }}</h1>
                 <div class="dashboard-actions">
                     <!-- Notification bell -->
-                    <button class="btn btn-icon" aria-label="Notifications">
-                        <i data-lucide="bell"></i>
-                        <span class="notification-badge">0</span>
-                    </button>
+                    <a href="{% url 'notifications' %}" class="btn btn-icon" aria-label="Notifications">
+                        <button class="btn btn-icon">
+                            <i data-lucide="bell"></i>
+                            <span class="notification-badge">{{ unread_notifications_count }}</span>
+                        </button>
+                    </a>
 
                     <!-- Toast popup -->
                     <div id="toast" class="toast" style="display: none;"></div>
@@ -131,45 +130,72 @@
                         <!-- Events Tab -->
                         <div class="tab-content" id="events-tab">
                             <div class="content-card">
-                                <div class="content-header">
-                                    <div>
-                                        <h2>Upcoming Events</h2>
-                                        <p>Events you might be interested in</p>
-                                    </div>
-                                    <div class="header-actions">
-                                   <select id="event-filter" class="select-filter">
-                                            <option value="all">All Events</option>
-                                            
-                                        </select>
-                                        <button class="btn btn-primary">
-                                            <i data-lucide="calendar"></i>
-                                            Create Event
-                                        </button>
-                                    </div>
+                            <div class="content-header">
+                                
+                                <div class="header-actions">
+                                <a href="{% url 'create_event' %}" class="btn btn-primary">
+                                    <i data-lucide="calendar"></i>
+                                    Add Event
+                                </a>
+                                
                                 </div>
-                                <div class="content-body">
-                                    <div class="events-list" id="events-list">
-                                        <!-- Events will be populated by JavaScript -->
+                                
+                            </div>
+                            <div class="content-body">
+                                <div class="events-list" id="events-list">
+                                {% for event in events %}
+                                    <div class="event-item">
+                                    <h4>{{ event.title }}</h4>
+                                    <p>{{ event.date|date:'M d, Y H:i' }}</p>
+                                    {% if event.id in joined_event_ids %}
+                                        <form method="post" action="{% url 'leave_event' event.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-warning">Leave</button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{% url 'join_event' event.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success">Join</button>
+                                        </form>
+                                    {% endif %}
                                     </div>
+                                {% empty %}
+                                    <p>No upcoming events.</p>
+                                {% endfor %}
                                 </div>
+                            </div>
                             </div>
                         </div>
 
                         <!-- Announcements Tab -->
                         <div class="tab-content" id="announcements-tab">
                             <div class="content-card">
-                                <div class="content-header">
-                                    <div>
-                                        <h2>Campus Announcements</h2>
-                                        <p>Stay updated with the latest campus news</p>
-                                    </div>
-                                </div>
-                                <div class="content-body">
-                                    <div class="announcements-list" id="announcements-list">
-                                        <!-- Announcements will be populated by JavaScript -->
-                                    </div>
-                                </div>
-                            </div>
+                            
+                                <div>
+                                    <h2>Campus Announcements</h2>
+                                    <p>Stay updated with the latest campus news</p>
+                                    
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        
+                                        {% for field in form %}
+                                            <div class="form-group">
+                                                {{ field.label_tag }}
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    <ul class="errorlist">
+                                                        {% for error in field.errors %}
+                                                            <li>{{ error }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                        
+                                        <button type="submit">Post Announcement</button>
+                                    </form>
+                                </div>        
+                            
                         </div>
                     </div>
                 </div>
@@ -182,7 +208,12 @@
             <h2 id="modal-community-name">Community Name</h2>
             <p id="modal-community-description">Community Description</p>
             <p id="modal-community-leader">Leader: </p>
-
+            {% if is_leader or user.is_staff %}
+            <a href="{% url 'create_event' %}" class="btn btn-primary">
+                <i data-lucide="calendar"></i>
+                Add Event
+            </a>
+            {% endif %}
         </div>
     </div>
     

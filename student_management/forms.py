@@ -6,7 +6,9 @@ from django.contrib.auth import logout as auth_logout
 from student_management.models import Profile
 from django import forms
 from .models import Community
-
+from .models import Announcement
+from django.utils import timezone
+from student_management.models import Event
 
 def signup(request):
     if request.method == 'POST':
@@ -66,3 +68,59 @@ class CommunityForm(forms.ModelForm):
     class Meta:
         model = Community
         fields = ['name', 'description', 'leader',]
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ['title', 'content']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter announcement title'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter announcement content'
+            }),
+        }
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'location', 'date','community']
+        widgets = {
+            'date': forms.DateTimeInput(attrs={
+                'type': 'datetime-local', 
+                'min': timezone.now().strftime('%Y-%m-%dT%H:%M')
+            }),
+                'community': forms.Select(attrs={
+                'class': 'form-control',
+                'required': True
+            }),
+        }
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        self.fields['community'].empty_label = "Select a community"
+        # Add help text to explain the community selection
+        self.fields['community'].help_text = "Select the community this event belongs to"
+        if user:
+            self.fields['community'].queryset = Community.objects.filter(leader=user)
+        else:
+            self.fields['community'].queryset = Community.objects.none()
+        
+    def clean_date(self):
+        date = self.cleaned_data.get('date')
+        
+        # Check if date is provided
+        if not date:
+            raise forms.ValidationError("Date is required.")
+        
+        # Get current time in the user's timezone
+        now = timezone.now()
+        
+        # Allow events that start from now (inclusive)
+        if date < now:
+            raise forms.ValidationError("Event date must be in the present or future.")
+        
+        return date
