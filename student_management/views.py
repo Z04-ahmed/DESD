@@ -314,18 +314,16 @@ def event_list(request):
 
 @login_required
 def create_event(request):
-        # ✅ Only allow community leaders
-    # Check if user is a community leader OR staff
+    # Allow only community leaders or staff
     is_community_leader = Community.objects.filter(leader=request.user).exists()
-    
+
     if not (is_community_leader or request.user.is_staff):
         raise PermissionDenied("Only community leaders or staff can create events.")
-    
-        # Get communities where user is a leader
+
     user_communities = Community.objects.filter(leader=request.user)
 
     if request.method == 'POST':
-        form = EventForm(request.POST)
+        form = EventForm(request.POST, user=request.user)  # ✅ pass user here
         if form.is_valid():
             event = form.save(commit=False)
             event.organizer = request.user
@@ -333,20 +331,21 @@ def create_event(request):
             messages.success(request, "Event successfully created!")
             return redirect('event_list')
     else:
-        initial_data = {'date': timezone.now()}
-        form = EventForm(initial=initial_data)
-        
-                # Filter communities in the form
-        if not request.user.is_staff:
-            # If not staff, only show communities where user is a leader
-            form.fields['community'].queryset = user_communities
-        # Staff can see all communities
+        form = EventForm(initial={'date': timezone.now()}, user=request.user) 
+        print("Form errors:", form.errors)  # 👈 ADD THIS
 
-        return render(request, 'events/create_event.html', {
+    # This runs for both invalid POST and GET
+    if not request.user.is_staff:
+        form.fields['community'].queryset = user_communities
+        
+    print("Posted community:", request.POST.get('community'))
+    print("Valid choices:", [str(c.id) for c in form.fields['community'].queryset])
+
+    return render(request, 'events/create_event.html', {
         'form': form,
         'user_communities': user_communities
     })
-
+    
 @login_required
 def event_list(request):
     # Start with all events
